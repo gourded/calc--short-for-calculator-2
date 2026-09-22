@@ -292,7 +292,7 @@ def multChecker():
     checkMult=""
     tempOp=operation.get_nums()
     for i in range(len(tempOp)):
-        checkMult=f"{tempOp[i]}+{tempOp[i]}+{tempOp[i]}+{tempOp[i]}+{tempOp[i]}"
+        checkMult=f"{tempOp[i]}+{tempOp[i]}+{tempOp[i]}"
         if checkMult in label.cget("text"):
             canUnlockMult=True
     if canUnlockMult==True:
