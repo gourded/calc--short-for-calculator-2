@@ -1,6 +1,8 @@
 import tkinter as tk
 import math
 import numpy as np
+import time
+import asyncio
 
 
 sqrt=False
@@ -108,6 +110,8 @@ hasDecimal=False
 newEquation=True
 squared=0
 squaring=False
+rowOffset=0
+keyStrokeTime=0.2
 
 #operation methods
 def addition():
@@ -212,7 +216,7 @@ def doIt():
     if sqrt==True:
         buttonRoot.config(text="√",command=lambda: squareRoot())
     if firstTimeScientficCalc:
-        setLabelText("i")
+        toScientificCutScene(0)
         output=0
         firstTimeScientficCalc=False
     elif output==None:
@@ -310,12 +314,80 @@ def squareChecker():
     checkSquare=f"{tempOp[0]}*{tempOp[0]}"
     if checkSquare == label.cget("text"):
         squared+=1
+        buttonExponent.config(text=f"{squared}/5", font="5")
     if squared==5:
         buttonExponent.config(text="x^n",command=lambda: exponent())
 
 def negativeChecker():
     if "-" in str(output):
-        buttonNegative.config(text="M-/+", command= lambda: negative())
+        buttonNegative.config(text="-/+", command= lambda: negative())
+
+
+def convertToScientific():
+    global rowOffset
+    rowOffset=3
+    offsetButtons()
+
+def offsetButtons():
+    global rowOffset
+    button1.grid(row=3+rowOffset, column=0,sticky="nsew")
+    button2.grid(row=3+rowOffset, column=1,sticky="nsew")
+    button3.grid(row=3+rowOffset, column=2,sticky="nsew")
+    button4.grid(row=4+rowOffset, column=0,sticky="nsew")
+    button5.grid(row=4+rowOffset, column=1,sticky="nsew")
+    button6.grid(row=4+rowOffset, column=2,sticky="nsew")
+    button7.grid(row=5+rowOffset, column=0,sticky="nsew")
+    button8.grid(row=5+rowOffset, column=1,sticky="nsew")
+    button9.grid(row=5+rowOffset, column=2,sticky="nsew")
+    button0.grid(row=6+rowOffset, column=1,sticky="nsew")
+    buttonPlus.grid(row=3+rowOffset, column=3,sticky="nsew")
+    buttonMinus.grid(row=4+rowOffset, column=3,sticky="nsew")
+    buttonMultiply.grid(row=5+rowOffset, column=3,sticky="nsew")
+    buttonDivide.grid(row=6+rowOffset, column=3,sticky="nsew")
+    buttonEqual.grid(row=6+rowOffset, column=2,sticky="nsew")
+    buttonClear.grid(row=2+rowOffset, column=3,sticky="nsew")
+    buttonDecimal.grid(row=6+rowOffset, column=0,sticky="nsew")
+    buttonExponent.grid(row=2+rowOffset, column=0,sticky="nsew")
+    buttonRoot.grid(row=2+rowOffset, column=1,sticky="nsew")
+    buttonNegative.grid(row=2+rowOffset,column=2,sticky="nsew")
+
+
+
+
+
+
+#cutscenes
+def toScientificCutScene(i):
+    fullText="i, am still needed, right?"
+    if i ==0:
+        label.config(text="i")
+        root.after(1500,toScientificCutScene,i+1)
+    elif i<17:
+        label.config(text=label.cget("text")+fullText[i])
+        root.after(35,toScientificCutScene,i+1)
+    elif i==17:
+        label.config(text=label.cget("text")+fullText[i])
+        root.after(200,toScientificCutScene,i+1)
+    elif i==18:
+        label.config(text=label.cget("text")+fullText[i])
+        root.after(30,toScientificCutScene,i+1)
+    elif i<26:
+        label.config(text=label.cget("text")+fullText[i])
+        root.after(15,toScientificCutScene,i+1)
+    elif i==26:
+        root.after(2000,toScientificCutScene,i+1)
+    else:
+        delScientificCutScene(i)
+def delScientificCutScene(i):
+    fullText="i, am still needed, right?"
+    if i >0:
+        label.config(text=fullText[0:i])
+        root.after(15,delScientificCutScene,i-1)
+
+    
+
+
+
 
 
 
@@ -373,6 +445,8 @@ buttonExponent = tk.Button(root, text="" ,font=("Arial", 24))
 buttonRoot = tk.Button(root, text="" ,font=("Arial", 24))
 buttonNegative=tk.Button(root, text="" ,font=("Arial",24))
 
+buttonScientificCalc=tk.Button(root,text="test",font=("Ariel", 12),command=lambda: toScientificCutScene(0))
+
 #allaigns everything to a grid
 l1.grid(row=0,column=0,sticky="nsew")
 l2.grid(row=0,column=1,sticky="nsew")
@@ -381,27 +455,28 @@ l4.grid(row=0,column=3,sticky="nsew")
 
 label.grid(row=1, column=0,columnspan=4,sticky="nsew")
 
-button1.grid(row=3, column=0,sticky="nsew")
-button2.grid(row=3, column=1,sticky="nsew")
-button3.grid(row=3, column=2,sticky="nsew")
-button4.grid(row=4, column=0,sticky="nsew")
-button5.grid(row=4, column=1,sticky="nsew")
-button6.grid(row=4, column=2,sticky="nsew")
-button7.grid(row=5, column=0,sticky="nsew")
-button8.grid(row=5, column=1,sticky="nsew")
-button9.grid(row=5, column=2,sticky="nsew")
-button0.grid(row=6, column=1,sticky="nsew")
-buttonPlus.grid(row=3, column=3,sticky="nsew")
-buttonMinus.grid(row=4, column=3,sticky="nsew")
-buttonMultiply.grid(row=5, column=3,sticky="nsew")
-buttonDivide.grid(row=6, column=3,sticky="nsew")
-buttonEqual.grid(row=6, column=2,sticky="nsew")
-buttonClear.grid(row=2, column=3,sticky="nsew")
-buttonDecimal.grid(row=6, column=0,sticky="nsew")
-buttonExponent.grid(row=2, column=0,sticky="nsew")
-buttonRoot.grid(row=2, column=1,sticky="nsew")
-buttonNegative.grid(row=2,column=2,sticky="nsew")
+button1.grid(row=3+rowOffset, column=0,sticky="nsew")
+button2.grid(row=3+rowOffset, column=1,sticky="nsew")
+button3.grid(row=3+rowOffset, column=2,sticky="nsew")
+button4.grid(row=4+rowOffset, column=0,sticky="nsew")
+button5.grid(row=4+rowOffset, column=1,sticky="nsew")
+button6.grid(row=4+rowOffset, column=2,sticky="nsew")
+button7.grid(row=5+rowOffset, column=0,sticky="nsew")
+button8.grid(row=5+rowOffset, column=1,sticky="nsew")
+button9.grid(row=5+rowOffset, column=2,sticky="nsew")
+button0.grid(row=6+rowOffset, column=1,sticky="nsew")
+buttonPlus.grid(row=3+rowOffset, column=3,sticky="nsew")
+buttonMinus.grid(row=4+rowOffset, column=3,sticky="nsew")
+buttonMultiply.grid(row=5+rowOffset, column=3,sticky="nsew")
+buttonDivide.grid(row=6+rowOffset, column=3,sticky="nsew")
+buttonEqual.grid(row=6+rowOffset, column=2,sticky="nsew")
+buttonClear.grid(row=2+rowOffset, column=3,sticky="nsew")
+buttonDecimal.grid(row=6+rowOffset, column=0,sticky="nsew")
+buttonExponent.grid(row=2+rowOffset, column=0,sticky="nsew")
+buttonRoot.grid(row=2+rowOffset, column=1,sticky="nsew")
+buttonNegative.grid(row=2+rowOffset,column=2,sticky="nsew")
 
+buttonScientificCalc.place(anchor='ne',relx=1.0, x=-29,y=30 ,height=40, width=40)
 
 
 
