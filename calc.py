@@ -3,11 +3,16 @@ import math
 import numpy as np
 import time
 import asyncio
+import matplotlib.pyplot as plt
 
 
 sqrt=False
 scientificCalc=False
 firstTimeScientficCalc=False
+
+xpoints = np.linspace(-10, 10, 1000)
+ypoints = np.linspace(-10, 10, 1000)
+
 
 #this class holds all the numbers and operators in order to calculate multiple operations strung together
 class Calculation:
@@ -96,6 +101,22 @@ class Calculation:
         if result%1==0:
             result=int(result)
         return result
+
+    def CalculateYCords(self):
+        global ypoints
+        
+
+        for i in range(len(ypoints)):
+            tempNums=self.nums.copy()
+            
+            for j in range(len(self.nums)):
+                if self.nums[j] == "x":
+                    self.nums[j]=xpoints[i]
+            ypoints[i]=self.calculate()
+            for j in range(len(self.nums)):
+                print(str(tempNums[j]))
+            self.nums=tempNums
+        return ypoints
         
     def clear(self):
         self.nums = []
@@ -255,7 +276,10 @@ def setNum(num):
         x=x+str(num)
         x=float(x)
     else:
-        x=x*10+num
+        if num=="x":
+            x="x"
+        else:
+            x=x*10+num
     if newEquation==True:
         setLabelText(str(num))
         newEquation=False
@@ -327,6 +351,12 @@ def convertToScientific():
     global rowOffset
     rowOffset=3
     offsetButtons()
+    toScientificCutScene(0)
+    graphingButtons()
+
+def graphingButtons():
+    buttonPlot.grid(row=3, column=0,sticky="nsew")
+    buttonX.grid(row=3, column=1,sticky="nsew")
 
 def offsetButtons():
     global rowOffset
@@ -378,6 +408,7 @@ def toScientificCutScene(i):
         root.after(2000,toScientificCutScene,i+1)
     else:
         delScientificCutScene(i)
+
 def delScientificCutScene(i):
     fullText="i, am still needed, right?"
     if i >0:
@@ -386,8 +417,32 @@ def delScientificCutScene(i):
 
     
 
+def plotGraph():
+    global ypoints
+    global operation
+    global x
+    operation.add_num(x)
 
+    for i in range(len(xpoints)):
+        tempCalc=Calculation()
+        for j in range(len(operation.nums)):
+            if operation.nums[j]=="x":
+                tempCalc.add_num(xpoints[i])
+            else:
+                tempCalc.add_num(operation.nums[j])
+        for j in range(len(operation.opps)):
+            tempCalc.add_opp(operation.opps[j])
 
+        result=tempCalc.calculate()
+        if result==None:
+            ypoints[i]=np.nan
+        else:
+            ypoints[i]=result
+
+    plt.plot(xpoints, ypoints)
+    plt.show()
+
+    operation.nums.pop()
 
 
 
@@ -445,7 +500,10 @@ buttonExponent = tk.Button(root, text="" ,font=("Arial", 24))
 buttonRoot = tk.Button(root, text="" ,font=("Arial", 24))
 buttonNegative=tk.Button(root, text="" ,font=("Arial",24))
 
-buttonScientificCalc=tk.Button(root,text="test",font=("Ariel", 12),command=lambda: toScientificCutScene(0))
+buttonScientificCalc=tk.Button(root,text="test",font=("Ariel", 12),command=lambda: convertToScientific())
+
+buttonPlot=tk.Button(root,text="Plot",font=("Ariel", 12),command=lambda: plotGraph())
+buttonX=tk.Button(root,text="x",font=("Ariel", 12),command=lambda: setNum("x"))
 
 #allaigns everything to a grid
 l1.grid(row=0,column=0,sticky="nsew")
